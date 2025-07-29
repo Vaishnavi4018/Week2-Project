@@ -1,0 +1,96 @@
+Week2-Project code
+
+
+# Week2_Project.ipynb
+# Week 2 Project: Synthetic Data Analysis and Classification with Improvisations
+
+# Import libraries
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import plotly.express as px
+import warnings
+warnings.filterwarnings('ignore')
+
+# Modular function to generate synthetic data
+def generate_synthetic_data(n_samples=100):
+    try:
+        # Create synthetic dataset with 2 features and a binary target
+        np.random.seed(42)
+        feature1 = np.random.rand(n_samples) * 100  # Random values for feature1
+        feature2 = np.random.rand(n_samples) * 50   # Random values for feature2
+        target = (feature1 + feature2 > 75).astype(int)  # Binary target based on a rule
+        data = pd.DataFrame({
+            'Feature1': feature1,
+            'Feature2': feature2,
+            'Target': target
+        })
+        print("Synthetic data generated successfully!")
+        return data
+    except Exception as e:
+        print(f"Error generating data: {e}")
+        return None
+
+# Modular function for preprocessing
+def preprocess_data(data):
+    try:
+        # Handle missing values (if any)
+        data = data.fillna(data.mean())
+        # Feature scaling with Min-Max Scaler (Improvisation)
+        scaler = MinMaxScaler()
+        numeric_cols = ['Feature1', 'Feature2']
+        data[numeric_cols] = scaler.fit_transform(data[numeric_cols])
+        print("Data preprocessed successfully!")
+        return data
+    except Exception as e:
+        print(f"Error in preprocessing: {e}")
+        return None
+
+# Modular function for visualization with Plotly (Improvisation)
+def visualize_data(data):
+    try:
+        fig = px.scatter(data, x='Feature1', y='Feature2', color='Target',
+                         title="Feature1 vs Feature2 (Interactive Plot)",
+                         labels={'Feature1': 'Feature 1 (Scaled)', 'Feature2': 'Feature 2 (Scaled)'})
+        fig.show()
+    except Exception as e:
+        print(f"Error in visualization: {e}")
+
+# Modular function for model training
+def train_model(data):
+    try:
+        X = data[['Feature1', 'Feature2']]
+        y = data['Target']
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        model = RandomForestClassifier(random_state=42)
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f"Model Accuracy: {accuracy:.2f}")
+        return model
+    except Exception as e:
+        print(f"Error in model training: {e}")
+        return None
+
+# Main execution
+def main():
+    # Generate synthetic data
+    data = generate_synthetic_data(n_samples=100)
+    
+    if data is not None:
+        # Preprocess data
+        data = preprocess_data(data)
+        
+        if data is not None:
+            # Visualize data
+            visualize_data(data)
+            
+            # Train model
+            train_model(data)
+
+# Run the project
+if __name__ == "__main__":
+    main()
